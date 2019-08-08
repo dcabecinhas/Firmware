@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- MAVROS posix SITL environment launch script -->
+    <!-- launches Gazebo environment, spawns sdf model and 3x: MAVROS, PX4 SITL -->
+    <!-- vehicle model and world -->
+    <arg name="est" default="ekf2"/>
+    <arg name="vehicle" default="iris"/>
+    <arg name="model" default="rigid_body_load_2_vehicles"/>
+    <arg name="world" default="$(find mavlink_sitl_gazebo)/worlds/empty_accurate.world"/>
+    <arg name="sdf" default="$(find mavlink_sitl_gazebo)/models/$(arg model)/$(arg model).sdf"/>
+    <!-- Cables initial configuration -->
+    <arg name="cable_0_roll" default="0.5"/>
+    <arg name="cable_0_pitch" default="0.86"/>
+    <arg name="cable_1_roll" default="0.5"/>
+    <arg name="cable_1_pitch" default="-0.5"/>
+    <arg name="neg_cable_0_roll" value="$(eval -arg('cable_0_roll'))"/>
+    <arg name="neg_cable_0_pitch" value="$(eval -arg('cable_0_pitch'))"/>
+    <arg name="neg_cable_1_roll" value="$(eval -arg('cable_1_roll'))"/>
+    <arg name="neg_cable_1_pitch" value="$(eval -arg('cable_1_pitch'))"/>
+    <!-- gazebo configs -->
+    <arg name="gui" default="true"/>
+    <arg name="debug" default="false"/>
+    <arg name="verbose" default="false"/>
+    <arg name="paused" default="true"/>
+    <arg name="x" default="0"/>
+    <arg name="y" default="0"/>
+    <arg name="z" default="-0.3"/>
+    <arg name="R" default="0"/>
+    <arg name="P" default="0"/>
+    <arg name="Y" default="0"/>
+    <!-- Gazebo sim -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="world_name" value="$(arg world)"/>
+        <arg name="debug" value="$(arg debug)"/>
+        <arg name="verbose" value="$(arg verbose)"/>
+        <arg name="paused" value="$(arg paused)"/>
+    </include>
+    <node name="$(anon vehicle_spawn)" pkg="gazebo_ros" type="spawn_model" output="screen" args="-sdf -file $(arg sdf) -model $(arg model) -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg R) -P $(arg P) -Y $(arg Y)
+    -J fake_joint_rb_link_cable_link_0_x $(arg cable_0_roll)
+    -J fake_joint_rb_link_cable_link_0_y $(arg cable_0_pitch)
+    -J fake_joint_cable_link_0_base_link_0_y $(arg neg_cable_0_pitch)
+    -J fake_joint_cable_link_0_base_link_0_x $(arg neg_cable_0_roll)
+    -J fake_joint_rb_link_cable_link_1_x $(arg cable_1_roll)
+    -J fake_joint_rb_link_cable_link_1_y $(arg cable_1_pitch)
+    -J fake_joint_cable_link_1_base_link_1_y $(arg neg_cable_1_pitch)
+    -J fake_joint_cable_link_1_base_link_1_x $(arg neg_cable_1_roll)"/>
+    <!-- UAV0 -->
+    <group ns="uav0">
+        <!-- MAVROS and vehicle configs -->
+        <arg name="ID" value="0"/>
+        <arg name="fcu_url" default="udp://:14540@localhost:14580"/>
+        <!-- PX4 SITL -->
+        <include file="$(find px4)/launch/px4.launch">
+            <arg name="est" value="$(arg est)"/>
+            <arg name="vehicle" value="$(arg vehicle)"/>
+            <arg name="ID" value="$(arg ID)"/>
+        </include>
+        <!-- MAVROS -->
+        <include file="$(find mavros)/launch/px4.launch">
+            <arg name="fcu_url" value="$(arg fcu_url)"/>
+            <arg name="gcs_url" value=""/>
+            <arg name="tgt_system" value="$(arg ID)"/>
+            <arg name="tgt_component" value="1"/>
+        </include>
+    </group>
+    <!-- UAV1 -->
+    <group ns="uav1">
+        <!-- MAVROS and vehicle configs -->
+        <arg name="ID" value="1"/>
+        <arg name="fcu_url" default="udp://:14541@localhost:14581"/>
+        <!-- PX4 SITL -->
+        <include file="$(find px4)/launch/px4.launch">
+            <arg name="est" value="$(arg est)"/>
+            <arg name="vehicle" value="$(arg vehicle)"/>
+            <arg name="ID" value="$(arg ID)"/>
+        </include>
+        <!-- MAVROS -->
+        <include file="$(find mavros)/launch/px4.launch">
+            <arg name="fcu_url" value="$(arg fcu_url)"/>
+            <arg name="gcs_url" value=""/>
+            <arg name="tgt_system" value="$(arg ID)"/>
+            <arg name="tgt_component" value="1"/>
+        </include>
+    </group>
+</launch>
+<!-- to add more UAVs (up to 10):
+Increase the id
+Change the name space
+Set the FCU to default="udp://:14540+id@localhost:14550+id"
+Set the malink_udp_port to 14560+id) -->
