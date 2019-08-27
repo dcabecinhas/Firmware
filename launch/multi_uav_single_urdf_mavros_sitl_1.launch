@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <launch>
+    <arg name="record_logs" default="true" />
     <!-- MAVROS posix SITL environment launch script -->
     <!-- launches Gazebo environment, spawns sdf model and 3x: MAVROS, PX4 SITL -->
     <!-- vehicle model and world -->
@@ -19,11 +20,11 @@
     <arg name="verbose" default="false"/>
     <arg name="paused" default="false"/>
     <arg name="x" default="0"/>
-    <arg name="y" default="0"/>
+    <arg name="y" default="4"/>
     <arg name="z" default="0.1"/>
     <arg name="R" default="0"/>
     <arg name="P" default="0"/>
-    <arg name="Y" default="0"/>
+    <arg name="Y" default="1.57"/>
     <!-- Gazebo sim -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="gui" value="$(arg gui)"/>
@@ -43,6 +44,7 @@
     <include file="$(find px4)/launch/px4.launch">
             <arg name="est" value="$(arg est)"/>
             <arg name="vehicle" value="$(arg vehicle)"/>
+            <arg name="interactive" value="false"/>
     </include>
     <!-- MAVROS -->
     <include file="$(find mavros)/launch/px4.launch">
@@ -50,6 +52,10 @@
             <arg name="gcs_url" value=""/>
             <arg name="tgt_component" value="1"/>
     </include>
+
+     <node pkg="rosbag" type="record" name="rosbag_record_logs" output="screen"
+       args="record -o /home/dcabecinhas/gazebo_logs/$(arg model) /clock /diagnostics /mavros/odometry/in /mavros/imu/data /mavros/state /mavros/extended_state /mavros/local_position/odom /mavros/local_position/pose /mavros/setpoint_position/local /mavros/setpoint_raw/attitude /mavros/setpoint_raw/target_attitude /mavros/setpoint_raw/target_local /mavros/target_actuator_control /quad/force /quad/odom /rb_link/force /rb_link/odom /cable/force /cable/odom"
+       if="$(arg record_logs)" />
 </launch>
 <!-- to add more UAVs (up to 10):
 Increase the id
