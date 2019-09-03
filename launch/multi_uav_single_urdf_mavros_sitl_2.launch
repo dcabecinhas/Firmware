@@ -9,10 +9,10 @@
     <arg name="world" default="$(find mavlink_sitl_gazebo)/worlds/empty_accurate.world"/>
     <arg name="sdf" default="$(find mavlink_sitl_gazebo)/models/$(arg model)/$(arg model).sdf"/>
     <!-- Cables initial configuration -->
-    <arg name="cable_0_roll" default="0.5"/>
-    <arg name="cable_0_pitch" default="0.86"/>
-    <arg name="cable_1_roll" default="0.5"/>
-    <arg name="cable_1_pitch" default="-0.5"/>
+    <arg name="cable_0_roll" default="0.0"/>
+    <arg name="cable_0_pitch" default="1.57"/>
+    <arg name="cable_1_roll" default="0.0"/>
+    <arg name="cable_1_pitch" default="-1.57"/>
     <arg name="neg_cable_0_roll" value="$(eval -arg('cable_0_roll'))"/>
     <arg name="neg_cable_0_pitch" value="$(eval -arg('cable_0_pitch'))"/>
     <arg name="neg_cable_1_roll" value="$(eval -arg('cable_1_roll'))"/>
@@ -21,13 +21,13 @@
     <arg name="gui" default="true"/>
     <arg name="debug" default="false"/>
     <arg name="verbose" default="false"/>
-    <arg name="paused" default="true"/>
+    <arg name="paused" default="false"/>
     <arg name="x" default="0"/>
-    <arg name="y" default="0"/>
-    <arg name="z" default="-0.3"/>
+    <arg name="y" default="4"/>
+    <arg name="z" default="0.1"/>
     <arg name="R" default="0"/>
     <arg name="P" default="0"/>
-    <arg name="Y" default="0"/>
+    <arg name="Y" default="1.57"/>
     <!-- Gazebo sim -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="gui" value="$(arg gui)"/>
@@ -46,7 +46,7 @@
     -J fake_joint_cable_link_1_base_link_1_y $(arg neg_cable_1_pitch)
     -J fake_joint_cable_link_1_base_link_1_x $(arg neg_cable_1_roll)"/>
     <!-- UAV0 -->
-    <group ns="uav0">
+    <group ns="uav_0">
         <!-- MAVROS and vehicle configs -->
         <arg name="ID" value="0"/>
         <arg name="fcu_url" default="udp://:14540@localhost:14580"/>
@@ -60,12 +60,12 @@
         <include file="$(find mavros)/launch/px4.launch">
             <arg name="fcu_url" value="$(arg fcu_url)"/>
             <arg name="gcs_url" value=""/>
-            <arg name="tgt_system" value="$(arg ID)"/>
+            <arg name="tgt_system" value="$(eval 1 + arg('ID'))"/>
             <arg name="tgt_component" value="1"/>
         </include>
     </group>
     <!-- UAV1 -->
-    <group ns="uav1">
+    <group ns="uav_1">
         <!-- MAVROS and vehicle configs -->
         <arg name="ID" value="1"/>
         <arg name="fcu_url" default="udp://:14541@localhost:14581"/>
@@ -79,7 +79,7 @@
         <include file="$(find mavros)/launch/px4.launch">
             <arg name="fcu_url" value="$(arg fcu_url)"/>
             <arg name="gcs_url" value=""/>
-            <arg name="tgt_system" value="$(arg ID)"/>
+            <arg name="tgt_system" value="$(eval 1 + arg('ID'))"/>
             <arg name="tgt_component" value="1"/>
         </include>
     </group>

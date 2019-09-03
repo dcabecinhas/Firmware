@@ -47,11 +47,13 @@
             <arg name="interactive" value="false"/>
     </include>
     <!-- MAVROS -->
-    <include file="$(find mavros)/launch/px4.launch">
-            <arg name="fcu_url" value="$(arg fcu_url)"/>
-            <arg name="gcs_url" value=""/>
-            <arg name="tgt_component" value="1"/>
-    </include>
+    <!-- <group ns="uav_0"> -->
+        <include file="$(find mavros)/launch/px4.launch">
+                <arg name="fcu_url" value="$(arg fcu_url)"/>
+                <arg name="gcs_url" value=""/>
+                <arg name="tgt_component" value="1"/>
+        </include>
+    <!-- </group> -->
 
      <node pkg="rosbag" type="record" name="rosbag_record_logs" output="screen"
        args="record -o /home/dcabecinhas/gazebo_logs/$(arg model) /clock /diagnostics /mavros/odometry/in /mavros/imu/data /mavros/state /mavros/extended_state /mavros/local_position/odom /mavros/local_position/pose /mavros/setpoint_position/local /mavros/setpoint_raw/attitude /mavros/setpoint_raw/target_attitude /mavros/setpoint_raw/target_local /mavros/target_actuator_control /quad/force /quad/odom /rb_link/force /rb_link/odom /cable/force /cable/odom"

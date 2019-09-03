@@ -20,7 +20,7 @@
         <arg name="paused" value="$(arg paused)"/>
     </include>
     <!-- UAV0 -->
-    <group ns="uav0">
+    <group ns="uav_0">
         <!-- MAVROS and vehicle configs -->
         <arg name="ID" value="0"/>
         <arg name="fcu_url" default="udp://:14540@localhost:14580"/>
@@ -46,7 +46,7 @@
         </include>
     </group>
     <!-- UAV1 -->
-    <group ns="uav1">
+    <group ns="uav_1">
         <!-- MAVROS and vehicle configs -->
         <arg name="ID" value="1"/>
         <arg name="fcu_url" default="udp://:14541@localhost:14581"/>
@@ -72,7 +72,7 @@
         </include>
     </group>
     <!-- UAV2 -->
-    <group ns="uav2">
+    <group ns="uav_2">
         <!-- MAVROS and vehicle configs -->
         <arg name="ID" value="2"/>
         <arg name="fcu_url" default="udp://:14542@localhost:14582"/>
