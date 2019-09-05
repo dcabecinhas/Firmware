@@ -1,21 +1,22 @@
 <?xml version="1.0"?>
 <launch>
+    <arg name="record_logs" default="true" />
     <!-- MAVROS posix SITL environment launch script -->
     <!-- launches Gazebo environment, spawns sdf model and 3x: MAVROS, PX4 SITL -->
     <!-- vehicle model and world -->
     <arg name="est" default="ekf2"/>
     <arg name="vehicle" default="iris"/>
-    <arg name="model" default="rigid_body_load_4_vehicles"/>
+    <arg name="model" default="point_mass_load_4_vehicles"/>
     <arg name="world" default="$(find mavlink_sitl_gazebo)/worlds/empty_accurate.world"/>
     <arg name="sdf" default="$(find mavlink_sitl_gazebo)/models/$(arg model)/$(arg model).sdf"/>
     <!-- Cables initial configuration -->
-    <arg name="cable_0_roll" default="-1.57"/>
+    <arg name="cable_0_roll" default="1.57"/>
     <arg name="cable_0_pitch" default="0.86"/>
-    <arg name="cable_1_roll" default="-1.57"/>
+    <arg name="cable_1_roll" default="1.57"/>
     <arg name="cable_1_pitch" default="-0.86"/>
-    <arg name="cable_2_roll" default="1.57"/>
+    <arg name="cable_2_roll" default="-1.57"/>
     <arg name="cable_2_pitch" default="-0.86"/>
-    <arg name="cable_3_roll" default="1.57"/>
+    <arg name="cable_3_roll" default="-1.57"/>
     <arg name="cable_3_pitch" default="0.86"/>
     <arg name="neg_cable_0_roll" value="$(eval -arg('cable_0_roll'))"/>
     <arg name="neg_cable_0_pitch" value="$(eval -arg('cable_0_pitch'))"/>
@@ -28,7 +29,7 @@
     <!-- gazebo configs -->
     <arg name="gui" default="true"/>
     <arg name="debug" default="false"/>
-    <arg name="verbose" default="true"/>
+    <arg name="verbose" default="false"/>
     <arg name="paused" default="false"/>
     <arg name="x" default="0"/>
     <arg name="y" default="0"/>
@@ -137,6 +138,10 @@
             <arg name="tgt_component" value="1"/>
         </include>
     </group>
+
+    <node pkg="rosbag" type="record" name="rosbag_record_logs" output="screen"
+       args="record -o /home/dcabecinhas/gazebo_logs/$(arg model) /clock /diagnostics /mavros/odometry/in /mavros/imu/data /mavros/state /mavros/extended_state /mavros/local_position/odom /mavros/local_position/pose /mavros/setpoint_position/local /mavros/setpoint_raw/attitude /mavros/setpoint_raw/target_attitude /mavros/setpoint_raw/target_local /mavros/target_actuator_control /quad/force /quad/odom /rb_link/force /rb_link/odom /cable/force /cable/odom"
+       if="$(arg record_logs)" />
 </launch>
 <!-- to add more UAVs (up to 10):
 Increase the id
