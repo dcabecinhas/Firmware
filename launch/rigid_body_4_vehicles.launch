@@ -140,7 +140,7 @@
     </group>
 
     <node pkg="rosbag" type="record" name="rosbag_record_logs" output="screen"
-       args="record -o /home/dcabecinhas/gazebo_logs/$(arg model) /clock /diagnostics /mavros/odometry/in /mavros/imu/data /mavros/state /mavros/extended_state /mavros/local_position/odom /mavros/local_position/pose /mavros/setpoint_position/local /mavros/setpoint_raw/attitude /mavros/setpoint_raw/target_attitude /mavros/setpoint_raw/target_local /mavros/target_actuator_control /quad/force /quad/odom /rb_link/force /rb_link/odom /cable/force /cable/odom"
+       args="record -o /home/dcabecinhas/gazebo_logs/$(arg model) -e /clock /diagnostics /(.*)/mavros/odometry/in /(.*)/mavros/imu/data /(.*)/mavros/state /(.*)/mavros/extended_state /(.*)/mavros/local_position/odom /(.*)/mavros/local_position/pose /(.*)/mavros/setpoint_position/local /(.*)/mavros/setpoint_raw/attitude /(.*)/mavros/setpoint_raw/target_attitude /(.*)/mavros/setpoint_raw/target_local /(.*)/mavros/target_actuator_control /iris(.*)/force /iris(.*)/odom /load/force /load/odom /cable(.*)/force /cable(.*)/odom"
        if="$(arg record_logs)" />
 </launch>
 <!-- to add more UAVs (up to 10):
