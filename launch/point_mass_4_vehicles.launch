@@ -3,6 +3,7 @@
     <arg name="record_logs" default="true" />
     <!-- MAVROS posix SITL environment launch script -->
     <!-- launches Gazebo environment, spawns sdf model and 3x: MAVROS, PX4 SITL -->
+    <arg name="interactive" default="false"/>
     <!-- vehicle model and world -->
     <arg name="est" default="ekf2"/>
     <arg name="vehicle" default="iris"/>
@@ -72,6 +73,7 @@
             <arg name="est" value="$(arg est)"/>
             <arg name="vehicle" value="$(arg vehicle)"/>
             <arg name="ID" value="$(arg ID)"/>
+            <arg name="interactive" value="$(arg interactive)"/>
         </include>
         <!-- MAVROS -->
         <include file="$(find mavros)/launch/px4.launch">
@@ -91,6 +93,7 @@
             <arg name="est" value="$(arg est)"/>
             <arg name="vehicle" value="$(arg vehicle)"/>
             <arg name="ID" value="$(arg ID)"/>
+            <arg name="interactive" value="$(arg interactive)"/>
         </include>
         <!-- MAVROS -->
         <include file="$(find mavros)/launch/px4.launch">
@@ -110,6 +113,7 @@
             <arg name="est" value="$(arg est)"/>
             <arg name="vehicle" value="$(arg vehicle)"/>
             <arg name="ID" value="$(arg ID)"/>
+            <arg name="interactive" value="$(arg interactive)"/>
         </include>
         <!-- MAVROS -->
         <include file="$(find mavros)/launch/px4.launch">
@@ -129,6 +133,7 @@
             <arg name="est" value="$(arg est)"/>
             <arg name="vehicle" value="$(arg vehicle)"/>
             <arg name="ID" value="$(arg ID)"/>
+            <arg name="interactive" value="$(arg interactive)"/>
         </include>
         <!-- MAVROS -->
         <include file="$(find mavros)/launch/px4.launch">
