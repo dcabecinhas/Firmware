@@ -1,3 +1,5 @@
+source ~/ws_multi_quadrotor/devel/setup.bash    # (optional)
+
 #!/usr/bin/env bash
 if [ "$1" == "" ]; then
   echo "Pass launchfile as argument."
@@ -5,7 +7,7 @@ if [ "$1" == "" ]; then
   exit 1
 fi
 
-# export PX4_SIM_SPEED_FACTOR=0.5
+# export PX4_SIM_SPEED_FACTOR=1
 DONT_RUN=1 make px4_sitl_default gazebo
 if [ $? -ne 0 ]
 then
@@ -13,7 +15,6 @@ then
   exit 1
 fi
 
-source ~/catkin_ws/devel/setup.bash    # (optional)
 source Tools/setup_gazebo.bash $(pwd) $(pwd)/build/px4_sitl_default
 export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$(pwd)
 export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$(pwd)/Tools/sitl_gazebo
