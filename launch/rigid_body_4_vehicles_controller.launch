@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="record_logs" default="false" />
+    <!-- MAVROS posix SITL environment launch script -->
+    <!-- launches Gazebo environment, spawns sdf model and 3x: MAVROS, PX4 SITL -->
+    <arg name="interactive" default="false"/>
+    <!-- vehicle model and world -->
+    <arg name="est" default="ekf2"/>
+    <arg name="vehicle" default="iris"/>
+    <arg name="model" default="rigid_body_load_4_vehicles"/>
+    <arg name="world" default="$(find mavlink_sitl_gazebo)/worlds/empty_accurate.world"/>
+    <arg name="sdf" default="$(find mavlink_sitl_gazebo)/models/$(arg model)/$(arg model).sdf"/>
+    <!-- Cables initial configuration -->
+    <arg name="cable_0_roll" default="1.57"/>
+    <arg name="cable_0_pitch" default="0.86"/>
+    <arg name="cable_1_roll" default="1.57"/>
+    <arg name="cable_1_pitch" default="-0.86"/>
+    <arg name="cable_2_roll" default="-1.57"/>
+    <arg name="cable_2_pitch" default="-0.86"/>
+    <arg name="cable_3_roll" default="-1.57"/>
+    <arg name="cable_3_pitch" default="0.86"/>
+    <arg name="neg_cable_0_roll" value="$(eval -arg('cable_0_roll'))"/>
+    <arg name="neg_cable_0_pitch" value="$(eval -arg('cable_0_pitch'))"/>
+    <arg name="neg_cable_1_roll" value="$(eval -arg('cable_1_roll'))"/>
+    <arg name="neg_cable_1_pitch" value="$(eval -arg('cable_1_pitch'))"/>
+    <arg name="neg_cable_2_roll" value="$(eval -arg('cable_2_roll'))"/>
+    <arg name="neg_cable_2_pitch" value="$(eval -arg('cable_2_pitch'))"/>
+    <arg name="neg_cable_3_roll" value="$(eval -arg('cable_3_roll'))"/>
+    <arg name="neg_cable_3_pitch" value="$(eval -arg('cable_3_pitch'))"/>
+    <!-- gazebo configs -->
+    <arg name="gui" default="false"/>
+    <arg name="debug" default="false"/>
+    <arg name="verbose" default="false"/>
+    <arg name="paused" default="false"/>
+    <arg name="physics" default="ode"/>
+    <arg name="x" default="0"/>
+    <arg name="y" default="0"/>
+    <arg name="z" default="0.15"/>
+    <arg name="R" default="0"/>
+    <arg name="P" default="0"/>
+    <arg name="Y" default="1.57"/>
+    <!-- Gazebo sim -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="world_name" value="$(arg world)"/>
+        <arg name="debug" value="$(arg debug)"/>
+        <arg name="verbose" value="$(arg verbose)"/>
+        <arg name="paused" value="$(arg paused)"/>
+        <arg name="physics" value="$(arg physics)"/>
+    </include>
+    <node name="$(anon vehicle_spawn)" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(arg sdf) -model $(arg model) -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg R) -P $(arg P) -Y $(arg Y)
+    -J fake_joint_rb_link_cable_link_0_x $(arg cable_0_roll)
+    -J fake_joint_rb_link_cable_link_0_y $(arg cable_0_pitch)
+    -J fake_joint_cable_link_0_base_link_0_y $(arg neg_cable_0_pitch)
+    -J fake_joint_cable_link_0_base_link_0_x $(arg neg_cable_0_roll)
+    -J fake_joint_rb_link_cable_link_1_x $(arg cable_1_roll)
+    -J fake_joint_rb_link_cable_link_1_y $(arg cable_1_pitch)
+    -J fake_joint_cable_link_1_base_link_1_y $(arg neg_cable_1_pitch)
+    -J fake_joint_cable_link_1_base_link_1_x $(arg neg_cable_1_roll)
+    -J fake_joint_rb_link_cable_link_2_x $(arg cable_2_roll)
+    -J fake_joint_rb_link_cable_link_2_y $(arg cable_2_pitch)
+    -J fake_joint_cable_link_2_base_link_2_y $(arg neg_cable_2_pitch)
+    -J fake_joint_cable_link_2_base_link_2_x $(arg neg_cable_2_roll)
+    -J fake_joint_rb_link_cable_link_3_x $(arg cable_3_roll)
+    -J fake_joint_rb_link_cable_link_3_y $(arg cable_3_pitch)
+    -J fake_joint_cable_link_3_base_link_3_y $(arg neg_cable_3_pitch)
+    -J fake_joint_cable_link_3_base_link_3_x $(arg neg_cable_3_roll)"/>
+    <!-- UAV0 -->
+    <group ns="uav_0">
+        <!-- MAVROS and vehicle configs -->
+        <arg name="ID" value="0"/>
+        <arg name="fcu_url" default="udp://:14540@localhost:14580"/>
+        <!-- PX4 SITL -->
+        <include file="$(find px4)/launch/px4.launch">
+            <arg name="est" value="$(arg est)"/>
+            <arg name="vehicle" value="$(arg vehicle)"/>
+            <arg name="ID" value="$(arg ID)"/>
+        </include>
+        <!-- MAVROS -->
+        <include file="$(find mavros)/launch/px4.launch">
+            <arg name="fcu_url" value="$(arg fcu_url)"/>
+            <arg name="gcs_url" value=""/>
+            <arg name="tgt_system" value="$(eval 1 + arg('ID'))"/>
+            <arg name="tgt_component" value="1"/>
+        </include>
+    </group>
+    <!-- UAV1 -->
+    <group ns="uav_1">
+        <!-- MAVROS and vehicle configs -->
+        <arg name="ID" value="1"/>
+        <arg name="fcu_url" default="udp://:14541@localhost:14581"/>
+        <!-- PX4 SITL -->
+        <include file="$(find px4)/launch/px4.launch">
+            <arg name="est" value="$(arg est)"/>
+            <arg name="vehicle" value="$(arg vehicle)"/>
+            <arg name="ID" value="$(arg ID)"/>
+        </include>
+        <!-- MAVROS -->
+        <include file="$(find mavros)/launch/px4.launch">
+            <arg name="fcu_url" value="$(arg fcu_url)"/>
+            <arg name="gcs_url" value=""/>
+            <arg name="tgt_system" value="$(eval 1 + arg('ID'))"/>
+            <arg name="tgt_component" value="1"/>
+        </include>
+    </group>
+    <!-- UAV2 -->
+    <group ns="uav_2">
+        <!-- MAVROS and vehicle configs -->
+        <arg name="ID" value="2"/>
+        <arg name="fcu_url" default="udp://:14542@localhost:14582"/>
+        <!-- PX4 SITL -->
+        <include file="$(find px4)/launch/px4.launch">
+            <arg name="est" value="$(arg est)"/>
+            <arg name="vehicle" value="$(arg vehicle)"/>
+            <arg name="ID" value="$(arg ID)"/>
+        </include>
+        <!-- MAVROS -->
+        <include file="$(find mavros)/launch/px4.launch">
+            <arg name="fcu_url" value="$(arg fcu_url)"/>
+            <arg name="gcs_url" value=""/>
+            <arg name="tgt_system" value="$(eval 1 + arg('ID'))"/>
+            <arg name="tgt_component" value="1"/>
+        </include>
+    </group>
+    <!-- UAV3 -->
+    <group ns="uav_3">
+        <!-- MAVROS and vehicle configs -->
+        <arg name="ID" value="3"/>
+        <arg name="fcu_url" default="udp://:14543@localhost:14583"/>
+        <!-- PX4 SITL -->
+        <include file="$(find px4)/launch/px4.launch">
+            <arg name="est" value="$(arg est)"/>
+            <arg name="vehicle" value="$(arg vehicle)"/>
+            <arg name="ID" value="$(arg ID)"/>
+        </include>
+        <!-- MAVROS -->
+        <include file="$(find mavros)/launch/px4.launch">
+            <arg name="fcu_url" value="$(arg fcu_url)"/>
+            <arg name="gcs_url" value=""/>
+            <arg name="tgt_system" value="$(eval 1 + arg('ID'))"/>
+            <arg name="tgt_component" value="1"/>
+        </include>
+    </group>
+
+    <node pkg="rosbag" type="record" name="rosbag_record_logs"
+       args="record -o /home/dcabecinhas/gazebo_logs/$(arg model) -e /clock /diagnostics /(.*)/mavros/odometry/in /(.*)/mavros/imu/data /(.*)/mavros/state /(.*)/mavros/extended_state /(.*)/mavros/local_position/odom /(.*)/mavros/local_position/pose /(.*)/mavros/setpoint_position/local /(.*)/mavros/setpoint_raw/attitude /(.*)/mavros/setpoint_raw/target_attitude /(.*)/mavros/setpoint_raw/target_local /(.*)/mavros/target_actuator_control /iris(.*)/force /iris(.*)/odom /load/force /load/odom /cable(.*)/force /cable(.*)/odom"
+       if="$(arg record_logs)" />
+
+    <node name="controller" pkg="pyquad" type="ros_manager.py" required="true" output="screen" />
+</launch>
+<!-- to add more UAVs (up to 10):
+Increase the id
+Change the name space
+Set the FCU to default="udp://:14540+id@localhost:14550+id"
+Set the malink_udp_port to 14560+id) -->

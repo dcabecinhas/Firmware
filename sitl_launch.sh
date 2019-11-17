@@ -7,7 +7,7 @@ if [ "$1" == "" ]; then
   exit 1
 fi
 
-# export PX4_SIM_SPEED_FACTOR=1
+# export PX4_SIM_SPEED_FACTOR=0.4
 DONT_RUN=1 make px4_sitl_default gazebo
 if [ $? -ne 0 ]
 then
@@ -18,4 +18,4 @@ fi
 source Tools/setup_gazebo.bash $(pwd) $(pwd)/build/px4_sitl_default
 export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$(pwd)
 export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$(pwd)/Tools/sitl_gazebo
-roslaunch px4 $1
+roslaunch px4 "$@"
